@@ -1,0 +1,17 @@
+.page { padding: 24rpx; }
+.head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16rpx; }
+.date { font-size: 32rpx; font-weight: 600; }
+.prog { font-size: 26rpx; color: #64748b; }
+.add { display: flex; flex-wrap: wrap; gap: 12rpx; margin-bottom: 20rpx; }
+.inp { flex: 1; min-width: 300rpx; border: 1rpx solid #cbd5e1; border-radius: 12rpx; padding: 16rpx; font-size: 28rpx; background: #fff; }
+.sub { max-width: 200rpx; }
+.btn { background: #4f46e5; color: #fff; border-radius: 12rpx; font-size: 28rpx; padding: 0 28rpx; }
+.list { display: flex; flex-direction: column; gap: 12rpx; }
+.empty { color: #94a3b8; font-size: 26rpx; text-align: center; padding: 40rpx 0; }
+.item { display: flex; align-items: center; gap: 16rpx; background: #fff; border-radius: 12rpx; padding: 18rpx; }
+.check { width: 40rpx; height: 40rpx; border: 1rpx solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; }
+.check.on { background: #4f46e5; border-color: #4f46e5; }
+.title { flex: 1; font-size: 28rpx; }
+.title.done { color: #94a3b8; text-decoration: line-through; }
+.badge { font-size: 22rpx; color: #4f46e5; border: 1rpx solid #c7d2fe; border-radius: 8rpx; padding: 2rpx 10rpx; }
+.del { color: #94a3b8; font-size: 30rpx; }

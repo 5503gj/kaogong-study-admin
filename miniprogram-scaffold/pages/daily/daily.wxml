@@ -1,0 +1,24 @@
+<view class="page">
+  <view class="head">
+    <picker mode="date" value="{{date}}" bindchange="onDate">
+      <view class="date">{{date}} 的任务</view>
+    </picker>
+    <view class="prog">已完成 {{list.filter(t=>t.done).length}} / {{list.length}}</view>
+  </view>
+
+  <view class="add">
+    <input class="inp" placeholder="添加任务，例如：复习 React Router" value="{{title}}" bindinput="onTitle" confirm-type="done" bindconfirm="add" />
+    <input class="inp sub" placeholder="科目(可选)" value="{{subject}}" bindinput="onSubject" />
+    <button class="btn" bindtap="add">添加</button>
+  </view>
+
+  <view class="list">
+    <view wx:if="{{list.length===0}}" class="empty">这一天还没有任务，上面加一个吧。</view>
+    <view wx:for="{{list}}" wx:key="id" class="item">
+      <view class="check {{item.done?'on':''}}" bindtap="toggle" data-id="{{item.id}}">{{item.done?'✓':''}}</view>
+      <view class="title {{item.done?'done':''}}">{{item.title}}</view>
+      <view wx:if="{{item.subject}}" class="badge">{{item.subject}}</view>
+      <view class="del" bindtap="del" data-id="{{item.id}}">🗑</view>
+    </view>
+  </view>
+</view>

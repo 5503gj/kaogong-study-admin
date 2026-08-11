@@ -1,0 +1,53 @@
+<view class="page">
+  <!-- 准备态 -->
+  <block wx:if="{{status==='setup'}}">
+    <view class="tip">锁屏计时，切出会被记录并提醒。</view>
+    <view class="form">
+      <input class="inp" placeholder="专注科目，例如：算法" value="{{subject}}" bindinput="onSubject" />
+      <view class="row">
+        <text>计划</text>
+        <input class="inp small" type="number" value="{{planned}}" bindinput="onPlanned" />
+        <text>分钟</text>
+      </view>
+      <input class="inp" placeholder="本次目标(可选)，例如：刷 3 道二叉树题" value="{{note}}" bindinput="onNote" />
+      <button class="btn" bindtap="start">开始专注</button>
+    </view>
+
+    <view class="history">
+      <view class="h-title">专注历史</view>
+      <view wx:if="{{history.length===0}}" class="empty">还没有专注记录。</view>
+      <view wx:for="{{history}}" wx:key="id" class="h-item">
+        <text>{{item.subject}}</text>
+        <text class="muted">切出 {{item.switchCount}} · 离开 {{item.awaySeconds}}s</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 运行态 -->
+  <block wx:if="{{status==='running'}}">
+    <view class="running">
+      <view class="subj">{{subject}}</view>
+      <view class="clock">{{mmss(elapsed)}}</view>
+      <view class="meta">计划 {{planned}} 分钟 · 切出 {{switchCount}} 次 · 离开 {{mmss(awaySeconds)}}</view>
+      <button class="btn danger" bindtap="end">结束专注</button>
+      <view class="hint">切出页面 / 锁屏 / 切后台都会被记录。</view>
+    </view>
+  </block>
+
+  <!-- 结束汇总 -->
+  <block wx:if="{{status==='done'}}">
+    <view class="summary">
+      <view class="s-title">专注结束 · 警醒报告</view>
+      <view class="grid">
+        <view class="cell"><view class="num">{{mmss(summary.effective)}}</view><view class="lab">有效专注</view></view>
+        <view class="cell"><view class="num">{{summary.switchCount}}</view><view class="lab">切出次数</view></view>
+        <view class="cell"><view class="num">{{mmss(summary.awaySeconds)}}</view><view class="lab">离开时长</view></view>
+        <view class="cell"><view class="num">{{summary.planned}}'</view><view class="lab">计划时长</view></view>
+      </view>
+      <view class="verdict {{summary.switchCount>0?'warn':'good'}}">
+        {{summary.switchCount===0 ? '完美专注！全程没有切出。' : '本次切出 '+summary.switchCount+' 次、离开 '+mmss(summary.awaySeconds)+'，打断了专注，下次把手机放远。'}}
+      </view>
+      <button class="btn" bindtap="again">再专注一次</button>
+    </view>
+  </block>
+</view>

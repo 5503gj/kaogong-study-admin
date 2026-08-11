@@ -1,0 +1,13 @@
+{
+  "description": "学习管理后台小程序脚手架",
+  "packOptions": { "ignore": [] },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "minified": true
+  },
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "study-admin-miniprogram",
+  "miniprogramRoot": "./"
+}

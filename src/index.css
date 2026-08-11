@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* 鲜亮靛蓝主色 */
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 243 75% 96%;
+    --secondary-foreground: 243 60% 30%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 243 75% 96%;
+    --accent-foreground: 243 60% 30%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 243 75% 59%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 9% 40%;
+    --sidebar-primary: 243 75% 59%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 243 75% 96%;
+    --sidebar-accent-foreground: 243 60% 30%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 243 75% 59%;
+
+    /* 品牌渐变（Hero / 强调） */
+    --brand-from: 243 75% 59%;
+    --brand-to: 262 83% 62%;
+    --brand-accent: 199 89% 48%;
+  }
+
+  .dark {
+    --background: 225 39% 7%;
+    --foreground: 210 40% 96%;
+
+    --card: 222 40% 10%;
+    --card-foreground: 210 40% 96%;
+
+    --popover: 222 40% 10%;
+    --popover-foreground: 210 40% 96%;
+
+    /* 暗色下更亮的靛蓝，保证可读又鲜亮 */
+    --primary: 243 80% 67%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 243 30% 18%;
+    --secondary-foreground: 210 40% 96%;
+
+    --muted: 222 30% 16%;
+    --muted-foreground: 217 15% 65%;
+
+    --accent: 243 30% 18%;
+    --accent-foreground: 210 40% 96%;
+
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 222 25% 18%;
+    --input: 222 25% 18%;
+    --ring: 243 80% 67%;
+
+    --sidebar-background: 222 45% 9%;
+    --sidebar-foreground: 217 15% 70%;
+    --sidebar-primary: 243 80% 67%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 243 30% 18%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 222 25% 18%;
+    --sidebar-ring: 243 80% 67%;
+
+    --brand-from: 243 80% 67%;
+    --brand-to: 262 83% 68%;
+    --brand-accent: 199 89% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* 品牌渐变（Hero 横幅等） */
+  .brand-gradient {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--brand-from)),
+      hsl(var(--brand-to))
+    );
+  }
+  /* 柔和阴影，让卡片有层次但不杂乱 */
+  .shadow-soft {
+    box-shadow: 0 6px 24px -8px rgb(15 23 42 / 0.18);
+  }
+  .dark .shadow-soft {
+    box-shadow: 0 6px 24px -8px rgb(0 0 0 / 0.5);
+  }
+}

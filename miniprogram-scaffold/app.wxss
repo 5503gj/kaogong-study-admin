@@ -1,0 +1,32 @@
+/* 全局基础样式 */
+page {
+  background: #f1f5f9;
+  font-size: 28rpx;
+  color: #0f172a;
+}
+.page { padding: 24rpx; }
+.head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20rpx; }
+.title { font-size: 36rpx; font-weight: 700; }
+.btn { background: #e2e8f0; color: #0f172a; border-radius: 12rpx; font-size: 26rpx; }
+.btn.primary { background: #4f46e5; color: #fff; }
+.input { background: #fff; border: 1rpx solid #cbd5e1; border-radius: 12rpx; padding: 16rpx; margin-bottom: 16rpx; }
+.form { background: #fff; padding: 20rpx; border-radius: 16rpx; margin-bottom: 20rpx; }
+.list { display: flex; flex-direction: column; gap: 16rpx; }
+.item { background: #fff; border-radius: 16rpx; padding: 20rpx; display: flex; align-items: center; justify-content: space-between; }
+.info { display: flex; flex-direction: column; gap: 6rpx; }
+.s { font-weight: 600; }
+.t { color: #334155; }
+.m { color: #94a3b8; font-size: 24rpx; }
+.del { color: #ef4444; font-size: 26rpx; }
+.empty { text-align: center; color: #94a3b8; padding: 40rpx; }
+.cards { display: flex; flex-wrap: wrap; gap: 16rpx; }
+.card { width: calc(50% - 8rpx); background: #fff; border-radius: 16rpx; padding: 20rpx; display: flex; flex-direction: column; gap: 6rpx; }
+.k { color: #64748b; font-size: 24rpx; }
+.v { font-size: 40rpx; font-weight: 700; }
+.h { color: #94a3b8; font-size: 22rpx; }
+.section { background: #fff; border-radius: 16rpx; padding: 20rpx; margin-top: 20rpx; }
+.sec-title { font-weight: 600; }
+.subject { display: flex; justify-content: space-between; padding: 12rpx 0; border-bottom: 1rpx solid #f1f5f9; }
+.sname { font-weight: 500; }
+.sval { color: #64748b; }
+.tip { margin-top: 20rpx; color: #64748b; font-size: 24rpx; }

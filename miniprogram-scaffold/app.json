@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/dashboard/dashboard",
+    "pages/records/records",
+    "pages/daily/daily",
+    "pages/focus/focus"
+  ],
+  "window": {
+    "navigationBarTitleText": "学习管理后台",
+    "navigationBarBackgroundColor": "#0f172a",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f1f5f9"
+  },
+  "style": "v2"
+}
