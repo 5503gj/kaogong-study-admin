@@ -26,6 +26,14 @@ npm run dev
 npm run build
 ```
 
+## 公网访问
+
+项目已配置 GitHub Pages 自动部署。推送到 `main` 后，GitHub Actions 会自动构建并发布：
+
+https://5503gj.github.io/kaogong-study-admin/
+
+首次启用时，需要在仓库 `Settings → Pages → Build and deployment` 中选择 `GitHub Actions`。
+
 打开后可使用演示账号 `demo` / `123456`，也可以直接注册本地账号。账号、学习数据和 AI 配置只保存在当前浏览器，不会自动上传服务器。
 
 ## 说明
