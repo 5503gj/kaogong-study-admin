@@ -32,7 +32,7 @@ export function AppHeader() {
       {/* 弹出导航抽屉：左滑覆盖，不占用页面宽度 */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="打开导航菜单">
+          <Button variant="ghost" size="icon" className="md:hidden" aria-label="打开导航菜单">
             <Menu className="size-5" />
           </Button>
         </SheetTrigger>

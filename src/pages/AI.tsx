@@ -14,7 +14,7 @@ export function AI() {
         </p>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-[0.82fr_1.18fr]">
         <div className="space-y-4">
           <Card>
             <CardHeader className="pb-2">

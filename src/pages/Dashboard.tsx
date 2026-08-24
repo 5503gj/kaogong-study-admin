@@ -78,10 +78,16 @@ export function Dashboard() {
   return (
     <div className="space-y-4">
       {/* Hero 横幅 */}
-      <div className="brand-gradient relative overflow-hidden rounded-xl p-5 text-white shadow-soft">
+      <div className="brand-gradient relative overflow-hidden rounded-2xl p-6 text-white shadow-soft md:p-7">
+        <div className="pointer-events-none absolute -right-10 -top-16 size-56 rounded-full border border-white/20" />
+        <div className="pointer-events-none absolute -bottom-28 right-24 size-64 rounded-full border border-white/10" />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold">备考看板</h1>
+            <div className="flex items-center gap-2 text-xs font-medium text-white/75">
+              <span className="size-2 rounded-full bg-emerald-300 shadow-[0_0_0_5px_rgba(110,231,183,0.16)]" />
+              今日学习状态
+            </div>
+            <h1 className="mt-2 text-2xl font-bold tracking-tight">备考看板</h1>
             <p className="mt-1 text-sm text-white/85">
               一目了然看见你的备考投入与进度。
             </p>
