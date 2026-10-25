@@ -1,12 +1,7 @@
 // 数据 Context：备考记录 / 考点清单 / 每日任务 / 专注记录 / 目标 / AI 配置 / 题库 / 错题本
-// 全部 localStorage 持久化，无需后端即可运行
-import {
-  createContext,
-  useContext,
-  useEffect,
-  type ReactNode,
-} from "react"
-import { uid, usePersistentState } from "@/lib/storage"
+// 按本地账号分区保存到 IndexedDB；模型凭证仅驻留当前页面内存
+import { type ReactNode } from 'react'
+import { uid } from '@/lib/storage'
 import type {
   AIConfig,
   DailyTask,
@@ -16,126 +11,52 @@ import type {
   StudySession,
   TodoItem,
   WrongQuestion,
-} from "@/types"
-import { buildQuestionBank, buildSeed } from "@/lib/seed"
+} from '@/types'
+import { useDataset } from '@/lib/profile-store'
+import { emptyDataset, parseBackup } from '@/lib/backup'
+import { useAuth } from '@/context/auth'
 
-const SEED_FLAG = "study-admin:seeded"
-
-const DEFAULT_AI: AIConfig = {
-  enabled: false,
-  endpoint: "https://api.openai.com/v1/chat/completions",
-  apiKey: "",
-  model: "gpt-4o-mini",
-}
-
-interface DataValue {
-  sessions: StudySession[]
-  todos: TodoItem[]
-  dailyTasks: DailyTask[]
-  focusSessions: FocusSession[]
-  goal: StudyGoal
-  aiConfig: AIConfig
-  questionBank: QuestionBankItem[]
-  wrongQuestions: WrongQuestion[]
-
-  setGoal: (g: StudyGoal) => void
-  setAIConfig: (c: AIConfig) => void
-
-  addSession: (s: Omit<StudySession, "id" | "createdAt">) => void
-  updateSession: (id: string, patch: Partial<StudySession>) => void
-  removeSession: (id: string) => void
-
-  addTodo: (t: Omit<TodoItem, "id" | "createdAt">) => void
-  updateTodo: (id: string, patch: Partial<TodoItem>) => void
-  removeTodo: (id: string) => void
-
-  addDailyTask: (t: Omit<DailyTask, "id" | "createdAt">) => void
-  updateDailyTask: (id: string, patch: Partial<DailyTask>) => void
-  removeDailyTask: (id: string) => void
-
-  addFocusSession: (f: Omit<FocusSession, "id" | "createdAt">) => void
-
-  addQuestion: (q: Omit<QuestionBankItem, "id" | "createdAt">) => void
-  updateQuestion: (id: string, patch: Partial<QuestionBankItem>) => void
-  removeQuestion: (id: string) => void
-
-  addWrongQuestion: (w: Omit<WrongQuestion, "id" | "createdAt">) => void
-  updateWrongQuestion: (id: string, patch: Partial<WrongQuestion>) => void
-  removeWrongQuestion: (id: string) => void
-  toggleWrong: (bankId: string) => void
-  clearWrong: () => void
-
-  importData: (
-    data: Partial<{
-      sessions: StudySession[]
-      todos: TodoItem[]
-      dailyTasks: DailyTask[]
-      focusSessions: FocusSession[]
-      goal: StudyGoal
-      aiConfig: AIConfig
-      questionBank: QuestionBankItem[]
-      wrongQuestions: WrongQuestion[]
-    }>,
-  ) => void
-  resetAll: () => void
-}
-
-const DataContext = createContext<DataValue | null>(null)
+import { DataContext } from './data'
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [sessions, setSessions] = usePersistentState<StudySession[]>(
-    "study-admin:sessions",
-    [],
-  )
-  const [todos, setTodos] = usePersistentState<TodoItem[]>("study-admin:todos", [])
-  const [dailyTasks, setDailyTasks] = usePersistentState<DailyTask[]>(
-    "study-admin:dailyTasks",
-    [],
-  )
-  const [focusSessions, setFocusSessions] = usePersistentState<FocusSession[]>(
-    "study-admin:focusSessions",
-    [],
-  )
-  const [goal, setGoal] = usePersistentState<StudyGoal>("study-admin:goal", {
-    dailyMinutes: 60,
-    weeklyDays: 5,
-  })
-  const [aiConfig, setAIConfig] = usePersistentState<AIConfig>(
-    "study-admin:aiConfig",
-    DEFAULT_AI,
-  )
-  const [questionBank, setQuestionBank] = usePersistentState<QuestionBankItem[]>(
-    "study-admin:questionBank",
-    [],
-  )
-  const [wrongQuestions, setWrongQuestions] = usePersistentState<WrongQuestion[]>(
-    "study-admin:wrongQuestions",
-    [],
-  )
+  const { user } = useAuth()
+  const { data, ready, saveState, setField, replace, restore, hasUnsaved } =
+    useDataset(user)
+  const {
+    sessions,
+    todos,
+    dailyTasks,
+    focusSessions,
+    goal,
+    aiConfig,
+    questionBank,
+    wrongQuestions,
+  } = data
+  type Updater<T> = T | ((previous: T) => T)
+  const setSessions = (v: Updater<StudySession[]>) => setField('sessions', v)
+  const setTodos = (v: Updater<TodoItem[]>) => setField('todos', v)
+  const setDailyTasks = (v: Updater<DailyTask[]>) => setField('dailyTasks', v)
+  const setFocusSessions = (v: Updater<FocusSession[]>) =>
+    setField('focusSessions', v)
+  const setGoal = (v: StudyGoal) => setField('goal', v)
+  const setAIConfig = (v: AIConfig) => setField('aiConfig', v)
+  const setQuestionBank = (v: Updater<QuestionBankItem[]>) =>
+    setField('questionBank', v)
+  const setWrongQuestions = (v: Updater<WrongQuestion[]>) =>
+    setField('wrongQuestions', v)
 
-  // 首次启动填充演示数据（仅一次）
-  useEffect(() => {
-    if (!localStorage.getItem(SEED_FLAG)) {
-      const seed = buildSeed()
-      setSessions(seed.sessions)
-      setTodos(seed.todos)
-      setDailyTasks(seed.dailyTasks)
-      setQuestionBank(buildQuestionBank())
-      setWrongQuestions(seed.wrongQuestions)
-      localStorage.setItem(SEED_FLAG, "1")
-    }
-  }, [setSessions, setTodos, setDailyTasks, setQuestionBank, setWrongQuestions])
-
-  const addSession = (s: Omit<StudySession, "id" | "createdAt">) =>
+  const addSession = (s: Omit<StudySession, 'id' | 'createdAt'>) =>
     setSessions((prev) => [{ ...s, id: uid(), createdAt: Date.now() }, ...prev])
 
   const updateSession = (id: string, patch: Partial<StudySession>) =>
-    setSessions((prev) => prev.map((x) => (x.id === id ? { ...x, ...patch } : x)))
+    setSessions((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, ...patch } : x)),
+    )
 
   const removeSession = (id: string) =>
     setSessions((prev) => prev.filter((x) => x.id !== id))
 
-  const addTodo = (t: Omit<TodoItem, "id" | "createdAt">) =>
+  const addTodo = (t: Omit<TodoItem, 'id' | 'createdAt'>) =>
     setTodos((prev) => [{ ...t, id: uid(), createdAt: Date.now() }, ...prev])
 
   const updateTodo = (id: string, patch: Partial<TodoItem>) =>
@@ -144,8 +65,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const removeTodo = (id: string) =>
     setTodos((prev) => prev.filter((x) => x.id !== id))
 
-  const addDailyTask = (t: Omit<DailyTask, "id" | "createdAt">) =>
-    setDailyTasks((prev) => [{ ...t, id: uid(), createdAt: Date.now() }, ...prev])
+  const addDailyTask = (t: Omit<DailyTask, 'id' | 'createdAt'>) =>
+    setDailyTasks((prev) => [
+      { ...t, id: uid(), createdAt: Date.now() },
+      ...prev,
+    ])
 
   const updateDailyTask = (id: string, patch: Partial<DailyTask>) =>
     setDailyTasks((prev) =>
@@ -155,14 +79,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const removeDailyTask = (id: string) =>
     setDailyTasks((prev) => prev.filter((x) => x.id !== id))
 
-  const addFocusSession = (f: Omit<FocusSession, "id" | "createdAt">) =>
+  const addFocusSession = (f: Omit<FocusSession, 'id' | 'createdAt'>) =>
     setFocusSessions((prev) => [
       { ...f, id: uid(), createdAt: Date.now() },
       ...prev,
     ])
 
-  const addQuestion = (q: Omit<QuestionBankItem, "id" | "createdAt">) =>
-    setQuestionBank((prev) => [{ ...q, id: uid(), createdAt: Date.now() }, ...prev])
+  const addQuestion = (q: Omit<QuestionBankItem, 'id' | 'createdAt'>) =>
+    setQuestionBank((prev) => [
+      { ...q, id: uid(), createdAt: Date.now() },
+      ...prev,
+    ])
 
   const updateQuestion = (id: string, patch: Partial<QuestionBankItem>) =>
     setQuestionBank((prev) =>
@@ -172,7 +99,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const removeQuestion = (id: string) =>
     setQuestionBank((prev) => prev.filter((x) => x.id !== id))
 
-  const addWrongQuestion = (w: Omit<WrongQuestion, "id" | "createdAt">) =>
+  const addWrongQuestion = (w: Omit<WrongQuestion, 'id' | 'createdAt'>) =>
     setWrongQuestions((prev) => [
       { ...w, id: uid(), createdAt: Date.now() },
       ...prev,
@@ -200,7 +127,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         questionText: q.question,
         correctAnswer: q.answer,
         analysis: q.analysis,
-        whyWrong: "知识点盲区",
+        whyWrong: '知识点盲区',
         errorType: q.knowledgePoint,
         createdAt: Date.now(),
       }
@@ -209,39 +136,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const clearWrong = () => setWrongQuestions([])
 
-  const importData = (
-    data: Partial<{
-      sessions: StudySession[]
-      todos: TodoItem[]
-      dailyTasks: DailyTask[]
-      focusSessions: FocusSession[]
-      goal: StudyGoal
-      aiConfig: AIConfig
-      questionBank: QuestionBankItem[]
-      wrongQuestions: WrongQuestion[]
-    }>,
-  ) => {
-    if (data.sessions) setSessions(data.sessions)
-    if (data.todos) setTodos(data.todos)
-    if (data.dailyTasks) setDailyTasks(data.dailyTasks)
-    if (data.focusSessions) setFocusSessions(data.focusSessions)
-    if (data.goal) setGoal(data.goal)
-    if (data.aiConfig) setAIConfig(data.aiConfig)
-    if (data.questionBank) setQuestionBank(data.questionBank)
-    if (data.wrongQuestions) setWrongQuestions(data.wrongQuestions)
-  }
-
-  const resetAll = () => {
-    setSessions([])
-    setTodos([])
-    setDailyTasks([])
-    setFocusSessions([])
-    setGoal({ dailyMinutes: 60, weeklyDays: 5 })
-    setAIConfig(DEFAULT_AI)
-    setQuestionBank([])
-    setWrongQuestions([])
-    localStorage.removeItem(SEED_FLAG)
-  }
+  const importData = (input: unknown) => replace(parseBackup(input))
+  const resetAll = () => replace(emptyDataset())
+  if (!ready)
+    return (
+      <div role="status" className="p-8">
+        {saveState}
+        <button onClick={() => location.reload()}>重试</button>
+      </div>
+    )
 
   return (
     <DataContext.Provider
@@ -276,15 +179,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
         clearWrong,
         importData,
         resetAll,
+        restoreImport: restore,
+        hasUnsaved,
       }}
     >
+      {user && (
+        <p role="status" aria-live="polite" className="px-4 py-1 text-xs">
+          本地空间：{user} · {saveState}（浏览器本地分区，不是服务器身份认证）
+        </p>
+      )}
       {children}
     </DataContext.Provider>
   )
-}
-
-export function useData() {
-  const ctx = useContext(DataContext)
-  if (!ctx) throw new Error("useData 必须在 DataProvider 内使用")
-  return ctx
 }

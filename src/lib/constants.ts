@@ -30,8 +30,9 @@ export const PRIORITY_BADGE: Record<Priority, "default" | "secondary" | "destruc
   low: "secondary",
 }
 
-/** 考公科目体系：行测 5 大模块 + 申论 + 面试 + 时政 */
+/** 考公科目体系：行测 6 大模块 + 申论 + 面试 + 时政 */
 export const SUBJECTS = [
+  "政治理论",
   "言语理解与表达",
   "数量关系",
   "判断推理",
@@ -44,6 +45,7 @@ export const SUBJECTS = [
 
 /** 行测下属模块（用于题库筛选与看板拆分） */
 export const XINGCE_MODULES = [
+  { key: "政治理论", label: "政治理论" },
   { key: "言语理解与表达", label: "言语理解" },
   { key: "数量关系", label: "数量关系" },
   { key: "判断推理", label: "判断推理" },

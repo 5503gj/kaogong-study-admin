@@ -17,7 +17,8 @@ export function saveJSON<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value))
   } catch (e) {
-    console.error("saveJSON 失败:", e)
+    void e
+    throw new Error("无法保存本地账号信息，请检查浏览器存储权限与空间")
   }
 }
 

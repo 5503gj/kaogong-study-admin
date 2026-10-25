@@ -1,116 +1,47 @@
 # 考公备考系统 · Study Admin
 
-一个面向个人备考的 React + TypeScript + Vite 原型，围绕“计划—学习记录—每日任务—错题分析—AI 答疑”形成闭环。数据默认保存在浏览器本地，适合先做个人工具和求职作品集演示。
+面向个人备考的 React + TypeScript + Vite 工具：学习记录、每日任务、专注统计、题库、错题照片及答疑。当前版本采用浏览器本地空间，适合个人使用和受控演示。它不提供服务器账号认证、跨设备同步或官方报考资格判定。
 
-## 功能
+[在线使用](https://5503gj.github.io/kaogong-study-admin/) · [修复记录与生产条件](HARDENING.md)
 
-- 仪表盘：连续学习、科目分布、目标考试倒计时
-- 学习记录：记录科目、时长和复盘笔记
-- 每日计划：任务、优先级和完成状态
-- 题库与错题分析：录入题目、答案、解析和复习状态
-- 专注模式：番茄钟与专注统计
-- AI 考公老师：默认本地启发式答疑，也支持配置兼容 OpenAI 协议的接口
-- 数据备份：导出/导入本地 JSON
-- 小程序迁移：`miniprogram-scaffold/` 与《小程序迁移指南.md》
+## 启动和验证
 
-## 本地运行
+使用 Node.js 22.12+（CI 使用 Node 22），从锁文件安装：
 
-```powershell
-npm install
+```sh
+npm ci
 npm run dev
 ```
 
-生产构建：
+演示账号为 **admin / 123456**，首次进入该空间有演示数据；自行注册的空间不继承演示学习记录。账号仅属于当前浏览器，清理站点数据会删除它。
 
-```powershell
+```sh
+npm run lint
+npm test
 npm run build
+npx playwright install chromium
+npm run test:e2e
+npm audit
 ```
 
-## 公网访问
+单元测试覆盖备份契约、IndexedDB 事务、账号分区、错误答案匹配、政策范围、模型异常与小程序日期；浏览器测试覆盖完整的账号切换、无效导入、快照恢复、配额失败、照片刷新、凭证清除和取消对话。模型测试全部使用合成凭证和拦截响应，不要求付费 API 或真实模型。GitHub Actions 在检查通过后才发布 Pages。
 
-项目已配置 GitHub Pages 自动部署。推送到 `main` 后，GitHub Actions 会自动构建并发布：
+## 数据和备份
 
-https://5503gj.github.io/kaogong-study-admin/
+学习数据存入按账号分区的 IndexedDB；照片先压缩到最长 1280px 的 JPEG，再以 Blob 保存。顶部持续显示保存状态；失败时当前内存内容仍可导出，离开页面会提示可能丢失未保存更改。请定期导出备份，浏览器存储不等于可靠的云备份。
 
-首次启用时，需要在仓库 `Settings → Pages → Build and deployment` 中选择 `GitHub Actions`。
+设置页可导出版本 2 JSON。导入先校验完整结构、版本、日期、枚举、大小及重复 ID，并显示覆盖数量；无效文件不修改原数据。导入和清空在同一事务中保存一份操作前快照，可用「恢复最近导入或清空前的快照」撤回。快照只有一层，不代替外部备份；清空后刷新不会重建演示记录。暂按单页面写入使用，尚无跨标签页冲突合并。
 
-打开后可使用演示账号 `demo` / `123456`，也可以直接注册本地账号。账号、学习数据和 AI 配置只保存在当前浏览器，不会自动上传服务器。
+旧版学习数据曾由全部账号共享，升级时会要求明确归属后再迁移，旧原始记录不会自动删除。旧版持久化的 AI 配置会清除；如以前导出过含 Key 的备份，应更换该凭证并清理旧备份中的凭证。
 
-## 说明
+## 答疑和模型
 
-这是一个前端原型，不是官方考试资料库，也不替代正式教材和真题。仓库不包含个人隐私、API Key 或第三方题库原文。
+默认是**本地规则助手**，只为完整匹配的题目显示已录入参考答案，不承诺解答任意真题。已收录政策只适用于明确标注的年份和地区，并附官方来源；其他年份或省份需要重新核对。题库为演示资料，答案仍需人工审校。
 
----
+可在设置中主动填写兼容 Chat Completions 的 HTTPS 接口（仅回环开发地址允许 HTTP）、模型和自己的 Key。Key 仅驻留当前页面内存，刷新、导入或切换账号后需重填；新备份和 IndexedDB 均不含 Key。外部服务会收到对话，**学习画像默认不发送**，需另行选择同意；请求有 15 秒超时、取消、上下文预算和响应大小限制。测试连接只确认有效文本响应，不能证明答案正确率。没有模型账号也能使用本地功能。
 
+企业服务端代管密钥的模式尚未实现，不能将本地 Key 输入框用作公共服务的密钥管理方案。
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 小程序
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+`miniprogram-scaffold/` 是较早的学习管理迁移骨架，本轮修复了本地日历日期和写入错误吞掉的问题。它不等同于当前 Web 版，不包含完整的 IndexedDB、题库、照片和账号迁移，也未经过微信真机验证。详见 [小程序迁移指南](小程序迁移指南.md)。

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useData } from "@/context/DataContext"
+import { useData } from "@/context/data"
 import { formatDate, todayISO } from "@/lib/format"
 
 function mmss(totalSeconds: number): string {
@@ -171,7 +171,6 @@ export function Focus() {
       clearInterval(tick)
       clearInterval(warnTimer)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active])
 
   // 结束汇总文案（警醒）

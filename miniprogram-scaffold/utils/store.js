@@ -23,10 +23,10 @@ function read(key, fallback) {
 function write(key, val) {
   try {
     wx.setStorageSync(key, val)
-  } catch (e) {}
+  } catch (e) { throw new Error('本地保存失败，请备份后重试') }
 }
 function fmt(d) {
-  return d.toISOString().slice(0, 10)
+  return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')
 }
 
 function buildSeed() {

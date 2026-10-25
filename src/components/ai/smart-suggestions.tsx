@@ -2,7 +2,7 @@
 import { useMemo } from "react"
 import { AlertTriangle, Lightbulb, CheckCircle2, Sparkles } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useData } from "@/context/DataContext"
+import { useData } from "@/context/data"
 import { buildSuggestions, type SuggestionLevel } from "@/lib/ai"
 
 const META: Record<

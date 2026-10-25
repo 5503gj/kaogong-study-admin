@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import type { QuestionBankItem } from "@/types"
-import { useData } from "@/context/DataContext"
+import { useData } from "@/context/data"
 
 const DIFF: Record<string, { label: string; cls: string }> = {
   easy: { label: "简单", cls: "bg-emerald-500/10 text-emerald-600 border-emerald-500/30" },

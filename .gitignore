@@ -5,6 +5,8 @@ dist/
 !.env.example
 .DS_Store
 *.log
+test-results/
+playwright-report/
 
 # Local skill source and generated workspace metadata
 .skill-src/

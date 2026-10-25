@@ -20,4 +20,8 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  // Named style helpers/hooks in generated shadcn primitives are deliberate exports.
+  { files: ['src/components/ui/*.tsx'], rules: {
+    'react-refresh/only-export-components': ['error', { allowConstantExport: true, allowExportNames: ['badgeVariants','buttonVariants','buttonGroupVariants','useFormField','navigationMenuTriggerStyle','useSidebar','toggleVariants'] }],
+  } },
 ])

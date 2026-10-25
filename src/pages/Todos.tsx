@@ -9,7 +9,7 @@ import {
   TodoFormDialog,
   type TodoFormValues,
 } from "@/components/todos/todo-form-dialog"
-import { useData } from "@/context/DataContext"
+import { useData } from "@/context/data"
 import {
   PRIORITY_BADGE,
   PRIORITY_LABEL,

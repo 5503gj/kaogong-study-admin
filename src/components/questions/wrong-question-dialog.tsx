@@ -1,26 +1,28 @@
 // 拍照记录错题对话框：可拍照 / 上传照片，并填写错因、错题种类、提升方案
-import { useEffect, useRef, useState } from "react"
-import { Camera, X } from "lucide-react"
+import { useRef, useState } from 'react'
+import { toast } from 'sonner'
+import { compressPhoto } from '@/lib/photos'
+import { Camera, X } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { SUBJECTS, WRONG_REASONS, ERROR_TYPES } from "@/lib/constants"
-import type { WrongQuestion, WrongReason } from "@/types"
+} from '@/components/ui/select'
+import { SUBJECTS, WRONG_REASONS, ERROR_TYPES } from '@/lib/constants'
+import type { WrongQuestion, WrongReason } from '@/types'
 
 export interface WrongQuestionInput {
   subject: string
@@ -35,7 +37,7 @@ export interface WrongQuestionInput {
   mastered?: boolean
 }
 
-export function WrongQuestionDialog({
+function WrongQuestionForm({
   open,
   onOpenChange,
   initial,
@@ -48,42 +50,37 @@ export function WrongQuestionDialog({
 }) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [photo, setPhoto] = useState<string | undefined>(initial?.photo)
-  const [subject, setSubject] = useState<string>(initial?.subject ?? SUBJECTS[0])
-  const [questionText, setQuestionText] = useState(initial?.questionText ?? "")
-  const [myAnswer, setMyAnswer] = useState(initial?.myAnswer ?? "")
-  const [correctAnswer, setCorrectAnswer] = useState(initial?.correctAnswer ?? "")
-  const [analysis, setAnalysis] = useState(initial?.analysis ?? "")
-  const [whyWrong, setWhyWrong] = useState<WrongReason>(
-    initial?.whyWrong ?? "知识点盲区",
+  const [subject, setSubject] = useState<string>(
+    initial?.subject ?? SUBJECTS[0],
   )
-  const [errorType, setErrorType] = useState(initial?.errorType ?? "")
-  const [improvement, setImprovement] = useState(initial?.improvement ?? "")
+  const [questionText, setQuestionText] = useState(initial?.questionText ?? '')
+  const [myAnswer, setMyAnswer] = useState(initial?.myAnswer ?? '')
+  const [correctAnswer, setCorrectAnswer] = useState(
+    initial?.correctAnswer ?? '',
+  )
+  const [analysis, setAnalysis] = useState(initial?.analysis ?? '')
+  const [whyWrong, setWhyWrong] = useState<WrongReason>(
+    initial?.whyWrong ?? '知识点盲区',
+  )
+  const [errorType, setErrorType] = useState(initial?.errorType ?? '')
+  const [improvement, setImprovement] = useState(initial?.improvement ?? '')
 
-  // 编辑时同步初始值
-  useEffect(() => {
-    if (open) {
-      setPhoto(initial?.photo)
-      setSubject(initial?.subject ?? SUBJECTS[0])
-      setQuestionText(initial?.questionText ?? "")
-      setMyAnswer(initial?.myAnswer ?? "")
-      setCorrectAnswer(initial?.correctAnswer ?? "")
-      setAnalysis(initial?.analysis ?? "")
-      setWhyWrong(initial?.whyWrong ?? "知识点盲区")
-      setErrorType(initial?.errorType ?? "")
-      setImprovement(initial?.improvement ?? "")
+  const [photoBusy, setPhotoBusy] = useState(false)
+  const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setPhotoBusy(true)
+    try {
+      setPhoto(await compressPhoto(file))
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '图片处理失败')
+    } finally {
+      setPhotoBusy(false)
     }
-  }, [open, initial])
-
-  const onPickPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0]
-    if (!f) return
-    const reader = new FileReader()
-    reader.onload = () => setPhoto(reader.result as string)
-    reader.readAsDataURL(f)
   }
 
   const submit = () => {
-    if (!whyWrong) return
+    if (!whyWrong || photoBusy) return
     if (!questionText.trim() && !correctAnswer.trim()) return
     onSubmit({
       subject,
@@ -104,9 +101,7 @@ export function WrongQuestionDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {initial ? "编辑错题" : "拍照记录错题"}
-          </DialogTitle>
+          <DialogTitle>{initial ? '编辑错题' : '拍照记录错题'}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
@@ -117,7 +112,8 @@ export function WrongQuestionDialog({
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={photoBusy}
                 capture="environment"
                 className="hidden"
                 onChange={onPickPhoto}
@@ -171,7 +167,10 @@ export function WrongQuestionDialog({
             </div>
             <div className="space-y-1">
               <Label>为什么会错 *</Label>
-              <Select value={whyWrong} onValueChange={(v) => setWhyWrong(v as WrongReason)}>
+              <Select
+                value={whyWrong}
+                onValueChange={(v) => setWhyWrong(v as WrongReason)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -259,4 +258,12 @@ export function WrongQuestionDialog({
       </DialogContent>
     </Dialog>
   )
+}
+
+export function WrongQuestionDialog(
+  props: Parameters<typeof WrongQuestionForm>[0],
+) {
+  return props.open ? (
+    <WrongQuestionForm key={props.initial?.id ?? 'new'} {...props} />
+  ) : null
 }

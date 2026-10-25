@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/context/auth"
 
 export function Login() {
   const { login, register } = useAuth()
@@ -56,7 +56,7 @@ export function Login() {
               </p>
             </div>
             <p className="text-xs text-primary-foreground/60">
-              Kaogong Prep · 本地数据 · 隐私安全
+              Kaogong Prep · 本地空间 · 定期备份
             </p>
           </div>
 
@@ -69,7 +69,7 @@ export function Login() {
               <p className="mt-1 text-sm text-muted-foreground">
                 {mode === "login"
                   ? "登录以继续使用考公备考系统"
-                  : "注册一个本地账号（数据仅保存在本机）"}
+                  : "创建浏览器本地空间；不构成服务器安全认证"}
               </p>
             </div>
 

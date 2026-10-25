@@ -1,15 +1,15 @@
 // 顶部栏：菜单按钮（弹出导航抽屉）、主题切换、账号菜单
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { useTheme } from "next-themes"
-import { Menu, Moon, Sun, LogOut, User, GraduationCap } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTheme } from 'next-themes'
+import { Menu, Moon, Sun, LogOut, User, GraduationCap } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
+} from '@/components/ui/sheet'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,13 +17,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/context/AuthContext"
-import { SideNav } from "./app-sidebar"
+} from '@/components/ui/dropdown-menu'
+import { useData } from '@/context/data'
+import { useAuth } from '@/context/auth'
+import { SideNav } from './app-sidebar'
 
 export function AppHeader() {
   const { theme, setTheme } = useTheme()
   const { user, logout } = useAuth()
+  const { hasUnsaved } = useData()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
@@ -54,7 +56,7 @@ export function AppHeader() {
           variant="ghost"
           size="icon"
           aria-label="切换主题"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         >
           <Sun className="size-4 dark:hidden" />
           <Moon className="hidden size-4 dark:block" />
@@ -71,8 +73,14 @@ export function AppHeader() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
-                logout()
-                navigate("/login")
+                if (
+                  hasUnsaved &&
+                  !window.confirm(
+                    '当前更改尚未保存，请先导出备份。仍要退出并放弃这些更改吗？',
+                  )
+                )
+                  return
+                if (logout()) navigate('/login')
               }}
             >
               <LogOut className="size-4" />

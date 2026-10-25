@@ -1,6 +1,6 @@
 // 待学项新增 / 编辑弹窗（「我还需要学什么」）
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -8,20 +8,20 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { PRIORITY_LABEL, TODO_STATUS_LABEL } from "@/lib/constants"
-import type { Priority, TodoItem, TodoStatus } from "@/types"
+} from '@/components/ui/select'
+import { PRIORITY_LABEL, TODO_STATUS_LABEL } from '@/lib/constants'
+import type { Priority, TodoItem, TodoStatus } from '@/types'
 
 export interface TodoFormValues {
   subject: string
@@ -39,37 +39,19 @@ interface Props {
   onSubmit: (values: TodoFormValues) => void
 }
 
-export function TodoFormDialog({ open, onOpenChange, initial, onSubmit }: Props) {
-  const [subject, setSubject] = useState("")
-  const [title, setTitle] = useState("")
-  const [priority, setPriority] = useState<Priority>("medium")
-  const [status, setStatus] = useState<TodoStatus>("todo")
-  const [targetDate, setTargetDate] = useState("")
-  const [notes, setNotes] = useState("")
-
-  useEffect(() => {
-    if (open) {
-      if (initial) {
-        setSubject(initial.subject)
-        setTitle(initial.title)
-        setPriority(initial.priority)
-        setStatus(initial.status)
-        setTargetDate(initial.targetDate ?? "")
-        setNotes(initial.notes ?? "")
-      } else {
-        setSubject("")
-        setTitle("")
-        setPriority("medium")
-        setStatus("todo")
-        setTargetDate("")
-        setNotes("")
-      }
-    }
-  }, [open, initial])
+function TodoForm({ open, onOpenChange, initial, onSubmit }: Props) {
+  const [subject, setSubject] = useState(initial?.subject ?? '')
+  const [title, setTitle] = useState(initial?.title ?? '')
+  const [priority, setPriority] = useState<Priority>(
+    initial?.priority ?? 'medium',
+  )
+  const [status, setStatus] = useState<TodoStatus>(initial?.status ?? 'todo')
+  const [targetDate, setTargetDate] = useState(initial?.targetDate ?? '')
+  const [notes, setNotes] = useState(initial?.notes ?? '')
 
   const handleSubmit = () => {
     if (!subject.trim() || !title.trim()) {
-      toast.error("请填写科目和学习内容")
+      toast.error('请填写科目和学习内容')
       return
     }
     onSubmit({
@@ -87,7 +69,7 @@ export function TodoFormDialog({ open, onOpenChange, initial, onSubmit }: Props)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>{initial ? "编辑待学项" : "新增待学项"}</DialogTitle>
+          <DialogTitle>{initial ? '编辑待学项' : '新增待学项'}</DialogTitle>
           <DialogDescription>记录你「还需要学什么」。</DialogDescription>
         </DialogHeader>
 
@@ -126,7 +108,10 @@ export function TodoFormDialog({ open, onOpenChange, initial, onSubmit }: Props)
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>优先级</Label>
-              <Select value={priority} onValueChange={(v) => setPriority(v as Priority)}>
+              <Select
+                value={priority}
+                onValueChange={(v) => setPriority(v as Priority)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -141,7 +126,10 @@ export function TodoFormDialog({ open, onOpenChange, initial, onSubmit }: Props)
             </div>
             <div className="space-y-1.5">
               <Label>状态</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as TodoStatus)}>
+              <Select
+                value={status}
+                onValueChange={(v) => setStatus(v as TodoStatus)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -176,4 +164,10 @@ export function TodoFormDialog({ open, onOpenChange, initial, onSubmit }: Props)
       </DialogContent>
     </Dialog>
   )
+}
+
+export function TodoFormDialog(props: Props) {
+  return props.open ? (
+    <TodoForm key={props.initial?.id ?? 'new'} {...props} />
+  ) : null
 }

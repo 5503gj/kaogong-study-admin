@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { useData } from "@/context/DataContext"
+import { useData } from "@/context/data"
 import { todayISO } from "@/lib/format"
 
 export function Daily() {

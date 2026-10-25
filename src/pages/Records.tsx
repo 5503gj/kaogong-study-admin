@@ -8,7 +8,7 @@ import {
   RecordFormDialog,
   type SessionFormValues,
 } from "@/components/records/record-form-dialog"
-import { useData } from "@/context/DataContext"
+import { useData } from "@/context/data"
 import type { StudySession } from "@/types"
 
 export function Records() {

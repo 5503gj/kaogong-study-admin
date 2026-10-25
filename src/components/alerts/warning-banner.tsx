@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { AlertTriangle, BellRing } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useData } from "@/context/DataContext"
+import { useData } from "@/context/data"
 import { differenceInCalendarDays, format, parseISO } from "date-fns"
 import { formatDuration } from "@/lib/format"
 

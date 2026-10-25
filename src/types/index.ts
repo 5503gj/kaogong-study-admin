@@ -62,6 +62,7 @@ export interface AIConfig {
   endpoint: string // 兼容 OpenAI Chat Completions 的地址
   apiKey: string // API Key
   model: string // 模型名
+  shareProfile?: boolean // 是否明确允许外发学习画像
 }
 
 /** 学习目标设置 */
@@ -124,7 +125,7 @@ export interface BackupData {
   dailyTasks: DailyTask[]
   focusSessions: FocusSession[]
   goal: StudyGoal
-  aiConfig?: AIConfig
+  aiConfig?: Omit<AIConfig,"apiKey">
   questionBank: QuestionBankItem[]
   wrongQuestions: WrongQuestion[]
   exportedAt: string

@@ -1,6 +1,6 @@
 // 学习记录新增 / 编辑弹窗
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -8,21 +8,21 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { todayISO } from "@/lib/format"
-import { SESSION_STATUS_LABEL } from "@/lib/constants"
-import type { SessionStatus, StudySession } from "@/types"
+} from '@/components/ui/select'
+import { todayISO } from '@/lib/format'
+import { SESSION_STATUS_LABEL } from '@/lib/constants'
+import type { SessionStatus, StudySession } from '@/types'
 
 export interface SessionFormValues {
   date: string
@@ -41,46 +41,26 @@ interface Props {
   onSubmit: (values: SessionFormValues) => void
 }
 
-export function RecordFormDialog({ open, onOpenChange, initial, onSubmit }: Props) {
-  const [date, setDate] = useState(todayISO())
-  const [subject, setSubject] = useState("")
-  const [title, setTitle] = useState("")
-  const [duration, setDuration] = useState("60")
-  const [status, setStatus] = useState<SessionStatus>("completed")
-  const [rating, setRating] = useState("3")
-  const [notes, setNotes] = useState("")
+function RecordForm({ open, onOpenChange, initial, onSubmit }: Props) {
+  const [date, setDate] = useState(initial?.date ?? todayISO())
+  const [subject, setSubject] = useState(initial?.subject ?? '')
+  const [title, setTitle] = useState(initial?.title ?? '')
+  const [duration, setDuration] = useState(String(initial?.duration ?? 60))
+  const [status, setStatus] = useState<SessionStatus>(
+    initial?.status ?? 'completed',
+  )
+  const [rating, setRating] = useState(String(initial?.rating ?? 3))
+  const [notes, setNotes] = useState(initial?.notes ?? '')
 
   // 打开时根据 initial 填充（编辑模式）
-  useEffect(() => {
-    if (open) {
-      if (initial) {
-        setDate(initial.date)
-        setSubject(initial.subject)
-        setTitle(initial.title)
-        setDuration(String(initial.duration))
-        setStatus(initial.status)
-        setRating(String(initial.rating ?? 3))
-        setNotes(initial.notes ?? "")
-      } else {
-        setDate(todayISO())
-        setSubject("")
-        setTitle("")
-        setDuration("60")
-        setStatus("completed")
-        setRating("3")
-        setNotes("")
-      }
-    }
-  }, [open, initial])
-
   const handleSubmit = () => {
     const dur = Number(duration)
     if (!date || !subject.trim() || !title.trim()) {
-      toast.error("请填写日期、科目和备考内容")
+      toast.error('请填写日期、科目和备考内容')
       return
     }
-    if (!Number.isFinite(dur) || dur <= 0) {
-      toast.error("时长需为正整数")
+    if (!Number.isInteger(dur) || dur <= 0 || dur > 1440) {
+      toast.error('时长需为1至1440的整数分钟')
       return
     }
     onSubmit({
@@ -99,7 +79,7 @@ export function RecordFormDialog({ open, onOpenChange, initial, onSubmit }: Prop
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>{initial ? "编辑备考记录" : "新增备考记录"}</DialogTitle>
+          <DialogTitle>{initial ? '编辑备考记录' : '新增备考记录'}</DialogTitle>
           <DialogDescription>
             记录一次备考：日期、科目、内容与时长。
           </DialogDescription>
@@ -122,6 +102,7 @@ export function RecordFormDialog({ open, onOpenChange, initial, onSubmit }: Prop
                 id="r-duration"
                 type="number"
                 min={1}
+                max={1440}
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
               />
@@ -132,6 +113,7 @@ export function RecordFormDialog({ open, onOpenChange, initial, onSubmit }: Prop
             <Label htmlFor="r-subject">科目</Label>
             <Input
               id="r-subject"
+              maxLength={80}
               placeholder="例如：资料分析"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
@@ -142,6 +124,7 @@ export function RecordFormDialog({ open, onOpenChange, initial, onSubmit }: Prop
             <Label htmlFor="r-title">备考内容</Label>
             <Input
               id="r-title"
+              maxLength={10000}
               placeholder="例如：做一套行测模拟卷"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -151,16 +134,21 @@ export function RecordFormDialog({ open, onOpenChange, initial, onSubmit }: Prop
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>状态</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as SessionStatus)}>
+              <Select
+                value={status}
+                onValueChange={(v) => setStatus(v as SessionStatus)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {(Object.keys(SESSION_STATUS_LABEL) as SessionStatus[]).map((k) => (
-                    <SelectItem key={k} value={k}>
-                      {SESSION_STATUS_LABEL[k]}
-                    </SelectItem>
-                  ))}
+                  {(Object.keys(SESSION_STATUS_LABEL) as SessionStatus[]).map(
+                    (k) => (
+                      <SelectItem key={k} value={k}>
+                        {SESSION_STATUS_LABEL[k]}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -185,6 +173,7 @@ export function RecordFormDialog({ open, onOpenChange, initial, onSubmit }: Prop
             <Label htmlFor="r-notes">备注</Label>
             <Textarea
               id="r-notes"
+              maxLength={10000}
               placeholder="可选：心得、难点、待办等"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -201,4 +190,10 @@ export function RecordFormDialog({ open, onOpenChange, initial, onSubmit }: Prop
       </DialogContent>
     </Dialog>
   )
+}
+
+export function RecordFormDialog(props: Props) {
+  return props.open ? (
+    <RecordForm key={props.initial?.id ?? 'new'} {...props} />
+  ) : null
 }

@@ -27,7 +27,7 @@ import {
   PRIORITY_ORDER,
   TODO_STATUS_LABEL,
 } from "@/lib/constants"
-import { useData } from "@/context/DataContext"
+import { useData } from "@/context/data"
 
 const PERIODS: { key: Period; label: string }[] = [
   { key: "day", label: "日" },
