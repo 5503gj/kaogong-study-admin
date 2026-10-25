@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react'
+import type { PlanTask } from '@/lib/study-pilot'
 import type {
   AIConfig,
   DailyTask,
@@ -31,6 +32,7 @@ export interface DataValue {
   removeTodo: (id: string) => void
 
   addDailyTask: (t: Omit<DailyTask, 'id' | 'createdAt'>) => void
+  commitDailyTasks: (tasks: PlanTask[]) => Promise<number>
   updateDailyTask: (id: string, patch: Partial<DailyTask>) => void
   removeDailyTask: (id: string) => void
 

@@ -8,6 +8,9 @@ import { ProtectedRoute } from '@/components/protected-route'
 import { AppLayout } from '@/components/app-layout'
 import { Login } from '@/pages/Login'
 import { Toaster } from '@/components/ui/sonner'
+const Pilot = lazy(() =>
+  import('@/pages/Pilot').then((m) => ({ default: m.Pilot })),
+)
 const Dashboard = lazy(() =>
   import('@/pages/Dashboard').then((m) => ({ default: m.Dashboard })),
 )
@@ -54,6 +57,7 @@ export default function App() {
                   </ProtectedRoute>
                 }
               >
+                <Route path="/pilot" element={<Pilot />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/records" element={<Records />} />
                 <Route path="/todos" element={<Todos />} />
@@ -64,8 +68,8 @@ export default function App() {
                 <Route path="/ai" element={<AI />} />
                 <Route path="/settings" element={<Settings />} />
               </Route>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/" element={<Navigate to="/pilot" replace />} />
+              <Route path="*" element={<Navigate to="/pilot" replace />} />
             </Routes>
           </Suspense>
           <Toaster />

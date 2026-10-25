@@ -188,6 +188,35 @@ export function useDataset(user: string | null) {
       locked.current = false
     }
   }
+  const transact = async (update: (previous: Dataset) => Dataset) => {
+    if (!user) throw new Error('请先选择本地空间')
+    if (locked.current) throw new Error('数据正在更新，请稍后重试')
+    locked.current = true
+    let writing = false
+    try {
+      await queue.current
+      if (failed.current)
+        throw new Error('存在未保存更改，请先导出备份或重试保存')
+      const next = update(current.current)
+      pendingCount.current++
+      writing = true
+      setSaveState('保存中…')
+      await writeDataset(user, next)
+      revision.current++
+      current.current = next
+      if (mounted.current) {
+        setData(next)
+        setSaveState('已保存到当前本地空间')
+      }
+    } catch (error) {
+      if (writing && mounted.current)
+        setSaveState('写入失败，本次操作未修改已保存数据')
+      throw error
+    } finally {
+      if (writing) pendingCount.current--
+      locked.current = false
+    }
+  }
   return {
     data,
     ready,
@@ -195,6 +224,7 @@ export function useDataset(user: string | null) {
     setField,
     replace,
     restore,
+    transact,
     hasUnsaved: saveState === '保存中…' || saveState.startsWith('保存失败'),
   }
 }

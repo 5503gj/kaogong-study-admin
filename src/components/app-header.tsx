@@ -1,8 +1,8 @@
 // 顶部栏：菜单按钮（弹出导航抽屉）、主题切换、账号菜单
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useTheme } from 'next-themes'
-import { Menu, Moon, Sun, LogOut, User, GraduationCap } from 'lucide-react'
+import { Menu, Moon, Sun, LogOut, User, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -21,6 +21,8 @@ import {
 import { useData } from '@/context/data'
 import { useAuth } from '@/context/auth'
 import { SideNav } from './app-sidebar'
+import { NAV } from '@/lib/navigation'
+const CommandPalette = lazy(() => import('./command-palette'))
 
 export function AppHeader() {
   const { theme, setTheme } = useTheme()
@@ -28,13 +30,30 @@ export function AppHeader() {
   const { hasUnsaved } = useData()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  const [command, setCommand] = useState(false)
+  const location = useLocation()
+  useEffect(() => {
+    const key = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setCommand((previous) => !previous)
+      }
+    }
+    window.addEventListener('keydown', key)
+    return () => window.removeEventListener('keydown', key)
+  }, [])
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-3 backdrop-blur md:px-4">
+    <header className="app-header">
       {/* 弹出导航抽屉：左滑覆盖，不占用页面宽度 */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="打开导航菜单">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            aria-label="打开导航菜单"
+          >
             <Menu className="size-5" />
           </Button>
         </SheetTrigger>
@@ -44,14 +63,25 @@ export function AppHeader() {
         </SheetContent>
       </Sheet>
 
-      <div className="flex items-center gap-2">
-        <div className="brand-gradient flex size-7 items-center justify-center rounded-lg text-white shadow-sm">
-          <GraduationCap className="size-4" />
-        </div>
-        <span className="text-sm font-semibold">考公备考系统</span>
+      <div className="header-breadcrumb">
+        <span>学习空间</span>
+        <i>/</i>
+        <strong>
+          {NAV.find((item) => location.pathname.startsWith(item.to))?.label ??
+            '知行'}
+        </strong>
       </div>
 
       <div className="ml-auto flex items-center gap-2">
+        <button
+          className="command-trigger"
+          aria-label="搜索页面或操作"
+          onClick={() => setCommand(true)}
+        >
+          <Search size={16} />
+          <span>快速查找</span>
+          <kbd>⌘ K</kbd>
+        </button>
         <Button
           variant="ghost"
           size="icon"
@@ -89,6 +119,11 @@ export function AppHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      {command && (
+        <Suspense fallback={null}>
+          <CommandPalette open={command} onOpenChange={setCommand} />
+        </Suspense>
+      )}
     </header>
   )
 }

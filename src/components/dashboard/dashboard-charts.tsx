@@ -21,7 +21,7 @@ import type { PeriodPoint, SubjectStat, TrendPoint } from "@/lib/stats"
 import { subjectColor } from "@/lib/constants"
 
 const trendConfig = {
-  minutes: { label: "学习时长(分钟)", color: "hsl(var(--primary))" },
+  minutes: { label: "学习时长(分钟)", color: "oklch(var(--primary))" },
 } satisfies Record<string, { label: string; color: string }>
 
 export function TrendChart({ trend }: { trend: TrendPoint[] }) {

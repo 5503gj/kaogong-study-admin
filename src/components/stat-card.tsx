@@ -21,7 +21,7 @@ export function StatCard({
   color,
   className,
 }: StatCardProps) {
-  const tint = color ?? "hsl(var(--primary))"
+  const tint = color ?? "oklch(var(--primary))"
   return (
     <Card className={cn("shadow-soft", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

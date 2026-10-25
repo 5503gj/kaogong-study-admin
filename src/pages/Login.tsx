@@ -31,7 +31,7 @@ export function Login() {
     setLoading(false)
     if (res.ok) {
       toast.success(mode === "login" ? "登录成功" : "注册成功")
-      navigate(from && from !== "/login" ? from : "/dashboard", { replace: true })
+      navigate(from && from !== "/login" ? from : "/pilot", { replace: true })
     } else {
       toast.error(res.error ?? "操作失败")
     }
@@ -42,21 +42,21 @@ export function Login() {
       <Card className="w-full max-w-3xl overflow-hidden p-0 shadow-lg">
         <div className="grid md:grid-cols-2">
           {/* 左侧品牌区（移动端隐藏） */}
-          <div className="relative hidden flex-col justify-between bg-primary p-8 text-primary-foreground md:flex">
+          <div className="login-story relative hidden flex-col justify-between bg-primary p-8 text-primary-foreground md:flex">
             <div className="flex items-center gap-2">
               <GraduationCap className="size-6" />
-              <span className="text-lg font-semibold">考公备考系统</span>
+              <span className="text-lg font-semibold">知行 · Study Pilot</span>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-5">
               <p className="text-2xl font-bold leading-snug">
-                记录你的备考时间、<br />看得见自己的成长。
+                每一次练习，<br />都找到下一步。
               </p>
               <p className="text-sm text-primary-foreground/80">
-                备考记录 · 备考看板 · 考点清单，一站式备考。
+                从学习记录到薄弱点诊断，从七日计划到每日行动。
               </p>
             </div>
             <p className="text-xs text-primary-foreground/60">
-              Kaogong Prep · 本地空间 · 定期备份
+              STUDY PILOT / 本地空间 · 你掌握数据
             </p>
           </div>
 

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 // 数据看板：核心指标 + 学习时长视图(日/周/月/年) + 学科占比 + 热力图 + 智能建议
 import { useMemo, useState } from "react"
 import {
@@ -77,27 +78,7 @@ export function Dashboard() {
 
   return (
     <div className="space-y-4">
-      {/* Hero 横幅 */}
-      <div className="brand-gradient relative overflow-hidden rounded-xl p-5 text-white shadow-soft">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-bold">备考看板</h1>
-            <p className="mt-1 text-sm text-white/85">
-              一目了然看见你的备考投入与进度。
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <div className="rounded-lg bg-white/15 px-3 py-2 text-center">
-              <div className="text-lg font-bold">{formatHours(stats.totalMinutes)}</div>
-              <div className="text-[11px] text-white/80">累计学习</div>
-            </div>
-            <div className="rounded-lg bg-white/15 px-3 py-2 text-center">
-              <div className="text-lg font-bold">{stats.studyDays}</div>
-              <div className="text-[11px] text-white/80">学习天数</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <header className="dashboard-heading"><div><div className="page-eyebrow">STUDY / OVERVIEW</div><h1>把努力，连成看得见的进步。</h1><p>记录投入，也给下一次练习一个明确方向。</p></div><Link className="dashboard-pilot-link" to="/pilot">打开学习计划 Agent <span aria-hidden="true">↗</span></Link></header>
 
       <WarningBanner />
 

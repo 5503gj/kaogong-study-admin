@@ -17,11 +17,20 @@ import { emptyDataset, parseBackup } from '@/lib/backup'
 import { useAuth } from '@/context/auth'
 
 import { DataContext } from './data'
+import { mergePlanTasks, type PlanTask } from '@/lib/study-pilot'
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
-  const { data, ready, saveState, setField, replace, restore, hasUnsaved } =
-    useDataset(user)
+  const {
+    data,
+    ready,
+    saveState,
+    setField,
+    replace,
+    restore,
+    transact,
+    hasUnsaved,
+  } = useDataset(user)
   const {
     sessions,
     todos,
@@ -135,6 +144,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
     })
 
   const clearWrong = () => setWrongQuestions([])
+  const commitDailyTasks = async (tasks: PlanTask[]) => {
+    let added = 0
+    await transact((previous) => {
+      const merged = mergePlanTasks(previous.dailyTasks, tasks)
+      added = merged.added
+      return { ...previous, dailyTasks: merged.tasks }
+    })
+    return added
+  }
 
   const importData = (input: unknown) => replace(parseBackup(input))
   const resetAll = () => replace(emptyDataset())
@@ -166,6 +184,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         updateTodo,
         removeTodo,
         addDailyTask,
+        commitDailyTasks,
         updateDailyTask,
         removeDailyTask,
         addFocusSession,
@@ -184,7 +203,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }}
     >
       {user && (
-        <p role="status" aria-live="polite" className="px-4 py-1 text-xs">
+        <p role="status" aria-live="polite" className="save-indicator">
           本地空间：{user} · {saveState}（浏览器本地分区，不是服务器身份认证）
         </p>
       )}
